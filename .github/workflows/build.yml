@@ -1,0 +1,83 @@
+on:
+  push:
+    paths:
+      - 'VaultKeeper.py'
+      - '.github/workflows/build.yml'
+      - 'requirements.txt'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build Windows Executable
+        run: pyinstaller --onefile --noconsole --distpath dist VaultKeeper.py
+
+      - name: Upload Artifact (.exe)
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultKeeper-Windows
+          path: dist/VaultKeeper.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt pyinstaller
+
+      - name: Build Linux AppImage
+        run: pyinstaller --onefile --distpath dist VaultKeeper.py
+
+      - name: Upload Artifact (.AppImage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultKeeper-Linux
+          path: dist/VaultKeeper
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt pyinstaller
+
+      - name: Build macOS Executable
+        run: pyinstaller --onefile --distpath dist VaultKeeper.py
+
+      - name: Upload Artifact (.dmg)
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultKeeper-macOS
+          path: dist/VaultKeeper
